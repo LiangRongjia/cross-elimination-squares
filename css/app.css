@@ -20,7 +20,7 @@ body{
 	text-align: center;
 	user-select: none;
 }
-#greet{
+#greet, #win{
 	position: fixed;
 	display: flex;
 	flex-direction: column;
@@ -35,7 +35,7 @@ body{
 	background-color: #ffffffaa;
 	backdrop-filter: blur(10px);
 }
-#title{
+#title, #win-text{
 	vertical-align: middle;
 	width: max-content;
 	height: max-content;
@@ -43,7 +43,7 @@ body{
 	font-size: 50px;
 	line-height: 50px;
 }
-#start-game{
+#start-game, #play-again{
 	vertical-align: middle;
 	margin: 24px 0px;
 	padding: 12px 24px;
@@ -55,6 +55,8 @@ body{
 	line-height: 24px;
 	background-color: white;
 	box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
+
+	cursor: pointer;
 }
 #container{
 	display: inline-block;

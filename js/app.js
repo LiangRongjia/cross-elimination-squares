@@ -20,6 +20,7 @@ var vm = new Vue({
 				count: 0,						//剩余数目
 				eachColorCount: []				//分颜色计数
 			},
+			isWin: false,
 		},
 		history: []
 	},
@@ -153,6 +154,11 @@ var vm = new Vue({
 							this.status.board[fourSquare[i].row][fourSquare[i].col].color = -1;					//还原颜色，在内联样式中，数组越界但不报错
 							this.status.leftSquare.eachColorCount[fourSquare[i].color]--;	//计该颜色的剩余数量
 							this.status.eliminateCount++;									//计消除方块数
+							this.status.leftSquare.count--;									//计消除方块数
+							if(this.status.leftSquare.count == 0){
+								this.win();
+								return;
+							}
 							break;														//避免多个相同时重复计数
 						}
 					}
@@ -187,13 +193,25 @@ var vm = new Vue({
 			}
 		},
 		editSettings(){									//编辑设定
-			if(this.settings.isEditting){				//如果原先是编辑状态...
+			if(this.settings.isEditting){				//如果是编辑状态...
 				this.settings.isEditting = false;		//改变为非编辑状态
 				this.newGame();							//新开一局游戏
 			}
-			else{										//如果原先是非编辑状态...
+			else{										//如果是非编辑状态...
 				this.initStatus();						//删除该局游戏，初始化状态
 				this.settings.isEditting = true;		//改变为编辑状态
+			}
+		},
+		win(){
+			this.status.isWin = true;
+		},
+		playAgain(){									//再来一局
+			if(this.status.isWin){						//如果是胜利状态...
+				this.status.isWin = false;				//改变为非胜利状态
+				this.newGame();							//新开一局游戏
+			}
+			else{										//如果非胜利状态...
+				this.settings.isWin = true;		//改变为胜利状态
 			}
 		}
 	}

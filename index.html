@@ -42,7 +42,7 @@
 							<input v-else type="number" v-model="settings.boardHeightN">
 						</div>
 						<div class="settings-item">
-							<div>生产有色方块数量</div>
+							<div>生产彩色方块的数量</div>
 							<div v-if="!settings.isEditting">{{settings.produceSquareNum}}</div>
 							<input v-else type="number" v-model="settings.produceSquareNum">
 						</div>
@@ -69,8 +69,12 @@
 				</div>
 			</div>
 			<div id="greet" v-if="isGreet">
-					<div id="title">十 字 消 方 块</div>
-					<div id="start-game" v-on:click="startGame">开始游戏</div>
+				<div id="title">十 字 消 方 块</div>
+				<div id="start-game" v-on:click="startGame">开始游戏</div>
+			</div>
+			<div id="win" v-if="status.isWin">
+				<div id="win-text">你 成 功 了 !</div>
+				<div id="play-again" v-on:click="playAgain">再来一局</div>
 			</div>
 		</div>
 	</body>
