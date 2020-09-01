@@ -2,10 +2,65 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title></title>
+		<title>十字消方块</title>
+		<link href="css/app.css" rel="styleSheet" type="text/css"/>
 		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
 	</head>
 	<body>
-		
+		<div id="app">
+			<div id="container">
+				<div id="board-card">
+					<div id="board">
+						<div class="row">
+							<div class="square" 
+								 v-for="item in status.board" 
+								 :style="{backgroundColor:settings.color.colorValue[item.color]}"
+								 v-on:click=clickSquare 
+								 :row=item.row
+								 :col=item.col>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="aside">
+					<div id="control-card">
+						<div id="revoke-button" v-on:click="revoke">撤销</div>
+						<div id="new-game-button" v-on:click="newGame">新开一局</div>
+						<div id="start-again-button" v-on:click="replay">重玩本局</div>
+						<div id="edit-settings-button" v-on:click="editSettings">{{settings.isEditting?"取消编辑":"编辑设定"}}</div>
+					</div>
+					<div id="settings-card">
+						<div class="settings-item">
+							<div>宽边方块数量</div>
+							<div v-if="!settings.isEditting">{{settings.boardWidthN}}</div>
+							<input v-else type="number" :value="settings.boardWidthN">
+						</div>
+						<div class="settings-item">
+							<div>高边方块数量</div>
+							<div v-if="!settings.isEditting">{{settings.boardHeightN}}</div>
+							<input v-else type="number" :value="settings.boardHeightN">
+						</div>
+						<div class="settings-item">
+							<div>生产有色方块数量</div>
+							<div v-if="!settings.isEditting">{{settings.produceSquareNum}}</div>
+							<input v-else type="number" :value="settings.produceSquareNum">
+						</div>
+					</div>
+					<div id="status-card">
+						<div>消除次数：{{status.eliminateTimes}}</div>
+						<div>消除方块数：{{status.eliminateCount}}</div>
+						<div>剩余：</div>
+						<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总数：{{settings.produceSquareNum - status.eliminateCount}}</div>
+						<div v-for="(item,index) in settings.color.colorValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div :style="{backgroundColor: settings.color.colorValue[index]}"></div>：{{status.leftSquare.eachColorCount[index]}}</div>
+					</div>
+				</div>
+			</div>
+			<div id="greet" v-if="isGreet">
+					<div id="title">十 字 消 方 块</div>
+					<div id="start-game" v-on:click="startGame">开始游戏</div>
+			</div>
+		</div>
 	</body>
+	<script src="js/app.js"></script>
 </html>
+
