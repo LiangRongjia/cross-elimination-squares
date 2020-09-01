@@ -47,45 +47,45 @@ var vm = new Vue({
 		initBoard(){													//初始化棋盘
 			this.status.board = [];										//确保清空棋盘
 			for(var i = 0; i < this.settings.boardHeightN; i++){		//对每行...
+				this.status.board.push(Array(0));						//嵌套一个行数组
 				for(var j = 0; j < this.settings.boardWidthN; j++){		//对每列...
 					var newSquare={										//设置方块属性
-						row : i,
-						col : j,
 						isEmpty: true,
 						color : -1,
 						style:{
 							backgroundColor: ""
 						}
 					};
-					this.status.board.push(newSquare);					//加入棋盘
+					this.status.board[i].push(newSquare);				//把方块加入该行
 				}
 			}
 		},
 		produceSquare(){																//生产有色方块
+			var boardSum = this.settings.boardWidthN * this.settings.boardHeightN;		//计算棋盘总格数
+			var rate = this.settings.produceSquareNum * 1.0 / boardSum;					//计算有色块的占比
+			if(rate > 2.0 / 3.0){
+				alert("生产的有色方块数量超过总格数的2/3，不可生成，请重新调整设定。");
+				return;
+			}
 			for(var i = 0; i < this.settings.produceSquareNum; i++){					//生产目标个数有色方块...
 				var produceFailed = true;												//标记生产第n个是否成功
 				while(produceFailed){													//若未成功，继续寻找别的地方
 					var row = Math.floor(Math.random() * this.settings.boardHeightN);	//随机行
 					var col = Math.floor(Math.random() * this.settings.boardWidthN);	//随机列
 					var color = Math.floor(Math.random() * this.settings.color.count);	//随机颜色
-					var squareNum = row * this.settings.boardWidthN + col;				//计算出方块是数组第几个
 					
-					if(this.status.board[squareNum].isEmpty == true){					//如果随机位置为空...
-						produceFailed = false;											//标记生产成功
-						this.status.board[squareNum].isEmpty = false;					//标记该处不为空
-						this.status.board[squareNum].color = color;					//装载颜色
+					if(this.status.board[row][col].isEmpty == true){					//如果随机位置为空...
+						this.status.board[row][col].isEmpty = false;					//标记该处不为空
+						this.status.board[row][col].color = color;						//装载颜色
 						this.status.leftSquare.eachColorCount[color]++;					//计数该颜色的现有数量
+						produceFailed = false;											//标记生产成功
 					}
 				}
 			}
 			this.status.leftSquare.count = this.settings.produceSquareNum;				//剩余方块等于目标数量
 		},
-		clickSquare(e){												//点击方块
-			var row = parseInt(e.target.getAttribute("row"));		//获取行，转成数值
-			var col = parseInt(e.target.getAttribute("col"));		//获取列，转成数值
-			var squareNum = row * this.settings.boardWidthN + col;	//计算在数组中的序号
-			
-			if(this.status.board[squareNum].isEmpty){				//如果位置是空的才...
+		clickSquare(row, col){										//点击方块
+			if(this.status.board[row][col].isEmpty){				//如果位置是空的才...
 				this.eliminate(row, col);							//进入消除
 			}
 		},
@@ -115,34 +115,30 @@ var vm = new Vue({
 			];
 																									//获取四个方向上的方块
 			for(var currentRow = baseRow; currentRow >= 0; currentRow--){							//记录上方向的方块
-				var currentSquareNum = currentRow * this.settings.boardWidthN + baseCol;
-				if(!this.status.board[currentSquareNum].isEmpty){
+				if(!this.status.board[currentRow][baseCol].isEmpty){
 					fourSquare[0].row = currentRow;													//获取行
-					fourSquare[0].color = this.status.board[currentSquareNum].color;				//获取颜色
+					fourSquare[0].color = this.status.board[currentRow][baseCol].color;				//获取颜色
 					break;
 				}
 			}
 			for(var currentCol = baseCol; currentCol < this.settings.boardWidthN; currentCol++){	//记录右方向的方块
-				var currentSquareNum = baseRow * this.settings.boardWidthN + currentCol;
-				if(!this.status.board[currentSquareNum].isEmpty){
+				if(!this.status.board[baseRow][currentCol].isEmpty){
 					fourSquare[1].col = currentCol;													//获取列
-					fourSquare[1].color = this.status.board[currentSquareNum].color;				//获取颜色
+					fourSquare[1].color = this.status.board[baseRow][currentCol].color;				//获取颜色
 					break;
 				}
 			}
 			for(var currentRow = baseRow; currentRow < this.settings.boardHeightN; currentRow++){	//记录下方向的方块
-				var currentSquareNum = currentRow * this.settings.boardWidthN + baseCol;
-				if(!this.status.board[currentSquareNum].isEmpty){
+				if(!this.status.board[currentRow][baseCol].isEmpty){
 					fourSquare[2].row = currentRow;													//获取行
-					fourSquare[2].color = this.status.board[currentSquareNum].color;				//获取颜色
+					fourSquare[2].color = this.status.board[currentRow][baseCol].color;				//获取颜色
 					break;
 				}
 			}
 			for(var currentCol = baseCol; currentCol >= 0; currentCol--){							//记录左方向的方块
-				var currentSquareNum = baseRow * this.settings.boardWidthN + currentCol;
-				if(!this.status.board[currentSquareNum].isEmpty){
+				if(!this.status.board[baseRow][currentCol].isEmpty){
 					fourSquare[3].col = currentCol;													//获取列
-					fourSquare[3].color = this.status.board[currentSquareNum].color;				//获取颜色
+					fourSquare[3].color = this.status.board[baseRow][currentCol].color;				//获取颜色
 					break;
 				}
 			}
@@ -153,8 +149,8 @@ var vm = new Vue({
 						if(i != j && fourSquare[i].color == fourSquare[j].color){		//排除自己，若有同颜色的...
 							var iSquareNum = fourSquare[i].row * this.settings.boardWidthN + fourSquare[i].col;
 							canEliminate = true;										//标记该次点击能够消除
-							this.status.board[iSquareNum].isEmpty = true;				//该方块置空
-							this.status.board[iSquareNum].color = -1;					//还原颜色，在内联样式中，数组越界但不报错
+							this.status.board[fourSquare[i].row][fourSquare[i].col].isEmpty = true;				//该方块置空
+							this.status.board[fourSquare[i].row][fourSquare[i].col].color = -1;					//还原颜色，在内联样式中，数组越界但不报错
 							this.status.leftSquare.eachColorCount[fourSquare[i].color]--;	//计该颜色的剩余数量
 							this.status.eliminateCount++;									//计消除方块数
 							break;														//避免多个相同时重复计数
@@ -190,8 +186,15 @@ var vm = new Vue({
 				this.saveHistory();											//存当前档
 			}
 		},
-		editSettings(){
-			this.settings.isEditting=!this.settings.isEditting;
+		editSettings(){									//编辑设定
+			if(this.settings.isEditting){				//如果原先是编辑状态...
+				this.settings.isEditting = false;		//改变为非编辑状态
+				this.newGame();							//新开一局游戏
+			}
+			else{										//如果原先是非编辑状态...
+				this.initStatus();						//删除该局游戏，初始化状态
+				this.settings.isEditting = true;		//改变为编辑状态
+			}
 		}
 	}
 });

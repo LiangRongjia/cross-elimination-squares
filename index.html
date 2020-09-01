@@ -3,21 +3,22 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>十字消方块</title>
-		<link href="css/app.css" rel="styleSheet" type="text/css"/>
-		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<link href="./css/app.css" rel="styleSheet" type="text/css"/>
+		<link href="./css/board-card.css" rel="styleSheet" type="text/css"/>
+		<link href="./css/right-aside.css" rel="styleSheet" type="text/css"/>
+		<script src="./js/vue.js" type="text/javascript" charset="utf-8"></script>
 	</head>
 	<body>
 		<div id="app">
 			<div id="container">
 				<div id="board-card">
 					<div id="board">
-						<div class="row">
+						<div class="row"
+							 v-for="(row, i_row) in status.board" >
 							<div class="square" 
-								 v-for="item in status.board" 
-								 :style="{backgroundColor:settings.color.colorValue[item.color]}"
-								 v-on:click=clickSquare 
-								 :row=item.row
-								 :col=item.col>
+								 v-for="(thisSquare, i_col) in row" 
+								 v-on:click="clickSquare(i_row, i_col)"
+								 :style="{backgroundColor:settings.color.colorValue[thisSquare.color]}">
 							</div>
 						</div>
 					</div>
@@ -27,31 +28,43 @@
 						<div id="revoke-button" v-on:click="revoke">撤销</div>
 						<div id="new-game-button" v-on:click="newGame">新开一局</div>
 						<div id="start-again-button" v-on:click="replay">重玩本局</div>
-						<div id="edit-settings-button" v-on:click="editSettings">{{settings.isEditting?"取消编辑":"编辑设定"}}</div>
+						<div id="edit-settings-button" v-on:click="editSettings">{{settings.isEditting?"保存编辑":"编辑设定"}}</div>
 					</div>
 					<div id="settings-card">
 						<div class="settings-item">
 							<div>宽边方块数量</div>
 							<div v-if="!settings.isEditting">{{settings.boardWidthN}}</div>
-							<input v-else type="number" :value="settings.boardWidthN">
+							<input v-else type="number" v-model="settings.boardWidthN">
 						</div>
 						<div class="settings-item">
 							<div>高边方块数量</div>
 							<div v-if="!settings.isEditting">{{settings.boardHeightN}}</div>
-							<input v-else type="number" :value="settings.boardHeightN">
+							<input v-else type="number" v-model="settings.boardHeightN">
 						</div>
 						<div class="settings-item">
 							<div>生产有色方块数量</div>
 							<div v-if="!settings.isEditting">{{settings.produceSquareNum}}</div>
-							<input v-else type="number" :value="settings.produceSquareNum">
+							<input v-else type="number" v-model="settings.produceSquareNum">
 						</div>
 					</div>
 					<div id="status-card">
-						<div>消除次数：{{status.eliminateTimes}}</div>
-						<div>消除方块数：{{status.eliminateCount}}</div>
-						<div>剩余：</div>
-						<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总数：{{settings.produceSquareNum - status.eliminateCount}}</div>
-						<div v-for="(item,index) in settings.color.colorValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div :style="{backgroundColor: settings.color.colorValue[index]}"></div>：{{status.leftSquare.eachColorCount[index]}}</div>
+						<div class="status-item">
+							<div>消除次数</div>
+							<div>{{status.eliminateTimes}}</div>
+						</div>
+						<div class="status-item">
+							<div>消除方块数</div>
+							<div>{{status.eliminateCount}}</div>
+						</div>
+						<div class="status-item">
+							<div>剩余方块数</div>
+							<div>{{status.leftSquare.count}}</div>
+						</div>
+						<div class="status-item"
+							 v-for="(item,index) in settings.color.colorValue">
+							<div class="status-color-square" :style="{backgroundColor: settings.color.colorValue[index]}"></div>
+							<div>{{status.leftSquare.eachColorCount[index]}}</div>
+						</div>
 					</div>
 				</div>
 			</div>

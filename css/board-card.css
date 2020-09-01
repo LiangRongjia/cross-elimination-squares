@@ -1,0 +1,36 @@
+#board-card{
+	margin: 24px 0px;
+	padding: 24px;
+
+	border-radius: 4px;
+
+	background-color: white;
+	box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
+}
+#board{
+	width: max-content;
+	height: max-content;
+}
+.row{
+	width: max-content;
+	font-size: 0px;
+}
+.square{
+	--square-edge: 24px;
+	
+	display: inline-block;
+	vertical-align: top;
+	
+	width: var(--square-edge);
+	height: var(--square-edge);
+	
+	box-shadow: inset -2px -2px 0px 0px rgba(0,0,0,0.1), inset 2px 2px 0px 0px rgba(255,255,255,0.5);
+	
+	font-size: 5px;
+	
+	background-color: lightgray;
+	
+	transition-property: all;
+	transition-duration: 200ms;
+	transition-timing-function: ease;
+}
